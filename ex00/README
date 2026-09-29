@@ -1,0 +1,244 @@
+# CPP07 — ex00
+
+## Start with a few functions
+
+### Objetivo
+
+El objetivo de este ejercicio es aprender a crear **function templates** en C++.
+
+Se deben crear tres funciones genéricas:
+
+* `swap` → intercambia dos valores.
+* `min` → devuelve el menor de dos valores.
+* `max` → devuelve el mayor de dos valores.
+
+Las funciones deben funcionar con diferentes tipos, como `int` o `std::string`.
+
+---
+
+## Archivos
+
+```text
+ex00/
+├── Makefile
+├── main.cpp
+└── whatever.hpp
+```
+
+---
+
+## Templates
+
+Un template permite crear una función que puede trabajar con diferentes tipos.
+
+```cpp
+template <typename T>
+```
+
+`T` es un tipo genérico. Cuando utilizamos la función, el compilador determina qué tipo es.
+
+Por ejemplo:
+
+```cpp
+int a = 2;
+int b = 3;
+
+swap(a, b);
+```
+
+Aquí:
+
+```text
+T = int
+```
+
+Si hacemos:
+
+```cpp
+std::string a = "hola";
+std::string b = "adios";
+
+swap(a, b);
+```
+
+Entonces:
+
+```text
+T = std::string
+```
+
+---
+
+## swap
+
+```cpp
+template <typename T>
+void swap(T &a, T &b)
+```
+
+Intercambia los valores de `a` y `b`.
+
+Utiliza una variable temporal:
+
+```cpp
+T temp = a;
+a = b;
+b = temp;
+```
+
+`swap` devuelve `void`, es decir, **no devuelve ningún valor**. Simplemente modifica las variables recibidas.
+
+---
+
+## min
+
+```cpp
+template <typename T>
+T min(T &a, T &b)
+```
+
+Compara los dos valores.
+
+Si `a` es menor:
+
+```cpp
+return a;
+```
+
+Si `b` es menor o son iguales:
+
+```cpp
+return b;
+```
+
+Por eso, si son iguales, devuelve el **segundo parámetro**, como pide el ejercicio.
+
+---
+
+## max
+
+```cpp
+template <typename T>
+T max(T &a, T &b)
+```
+
+Funciona igual que `min`, pero buscando el valor mayor.
+
+Si `a` es mayor:
+
+```cpp
+return a;
+```
+
+En caso contrario devuelve `b`.
+
+Si son iguales, también devuelve el **segundo parámetro**.
+
+---
+
+## ¿Por qué repetimos `template <typename T>`?
+
+Cada función template es independiente.
+
+Por eso hay que declarar el template antes de cada función:
+
+```cpp
+template <typename T>
+void swap(...);
+
+template <typename T>
+T min(...);
+
+template <typename T>
+T max(...);
+```
+
+El `T` pertenece únicamente a la función template que viene después.
+
+---
+
+## ¿Por qué las funciones están en el `.hpp`?
+
+Los templates necesitan que su implementación esté disponible cuando el compilador genera la función para un tipo concreto.
+
+Por eso en este ejercicio las funciones se implementan directamente en:
+
+```text
+whatever.hpp
+```
+
+y no en un `.cpp`.
+
+---
+
+## `::swap`, `::min` y `::max`
+
+En `main.cpp` utilizamos:
+
+```cpp
+::swap(a, b);
+::min(a, b);
+::max(a, b);
+```
+
+`::` indica que estamos utilizando la función del **namespace global**.
+
+Esto evita posibles conflictos con funciones que ya existen en `std`.
+
+---
+
+## Compilación
+
+El proyecto se compila con:
+
+```bash
+make
+```
+
+Para ejecutar:
+
+```bash
+./whatever
+```
+
+Para limpiar:
+
+```bash
+make clean
+```
+
+Para eliminar también el ejecutable:
+
+```bash
+make fclean
+```
+
+Para recompilar desde cero:
+
+```bash
+make re
+```
+
+---
+
+## Resultado esperado
+
+```text
+a = 3, b = 2
+min(a, b) = 2
+max(a, b) = 3
+c = chaine2, d = chaine1
+min(c, d) = chaine1
+max(c, d) = chaine2
+```
+
+### Conceptos aprendidos
+
+* Function templates.
+* `template <typename T>`.
+* Tipos genéricos.
+* Referencias `T &`.
+* Funciones que devuelven `T`.
+* Funciones que devuelven `void`.
+* Templates definidos en `.hpp`.
+* Uso de `::` para acceder al namespace global.
