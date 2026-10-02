@@ -1,0 +1,240 @@
+# CPP07 — ex01
+
+## Iter
+
+### Objetivo
+
+El objetivo de este ejercicio es crear un **function template `iter`** que recorra un array de cualquier tipo y ejecute una función sobre cada uno de sus elementos.
+
+---
+
+## Archivos
+
+```text
+ex01/
+├── Makefile
+├── main.cpp
+└── iter.hpp
+```
+
+---
+
+## `iter`
+
+La función tiene tres parámetros:
+
+```cpp
+template <typename T>
+void iter(T *array, size_t length, void (*function)(T &))
+```
+
+### Primer parámetro
+
+```cpp
+T *array
+```
+
+Es la dirección del primer elemento del array.
+
+`T` permite que el array pueda ser de cualquier tipo.
+
+Por ejemplo:
+
+```cpp
+int numbers[] = {1, 2, 3};
+```
+
+o:
+
+```cpp
+std::string words[] = {"Hola", "Mundo"};
+```
+
+---
+
+### Segundo parámetro
+
+```cpp
+size_t length
+```
+
+Indica cuántos elementos tiene el array.
+
+Por ejemplo:
+
+```cpp
+iter(numbers, 3, printInt);
+```
+
+El `3` indica que hay tres elementos.
+
+---
+
+### Tercer parámetro
+
+```cpp
+void (*function)(T &)
+```
+
+Es una función que será ejecutada sobre cada elemento del array.
+
+Por ejemplo:
+
+```cpp
+void printInt(int &number)
+{
+    std::cout << number << std::endl;
+}
+```
+
+Cuando hacemos:
+
+```cpp
+iter(numbers, 3, printInt);
+```
+
+`iter` ejecuta:
+
+```text
+printInt(numbers[0])
+printInt(numbers[1])
+printInt(numbers[2])
+```
+
+---
+
+## ¿Por qué `T`?
+
+`T` es un tipo genérico.
+
+Si utilizamos:
+
+```cpp
+iter(numbers, 5, printInt);
+```
+
+el compilador entiende:
+
+```text
+T = int
+```
+
+Si utilizamos:
+
+```cpp
+iter(words, 3, printString);
+```
+
+entiende:
+
+```text
+T = std::string
+```
+
+De esta forma podemos utilizar la misma función `iter` con diferentes tipos de arrays.
+
+---
+
+## Recorrido del array
+
+Dentro de `iter` utilizamos un índice:
+
+```cpp
+size_t i = 0;
+
+while (i < length)
+{
+    function(array[i]);
+    i++;
+}
+```
+
+En cada vuelta:
+
+1. Accedemos a `array[i]`.
+2. Pasamos ese elemento a la función.
+3. Aumentamos `i`.
+4. Repetimos hasta llegar a `length`.
+
+---
+
+## Referencia
+
+El tercer parámetro utiliza:
+
+```cpp
+T &
+```
+
+Esto permite que la función recibida pueda trabajar directamente con el elemento del array.
+
+El enunciado permite que la función reciba el elemento por referencia constante o no constante, dependiendo del contexto.
+
+---
+
+## Pruebas
+
+Se prueba `iter` con:
+
+* Un array de `int`.
+* Un array de `std::string`.
+
+Ejemplo:
+
+```cpp
+int numbers[] = {1, 2, 3, 4, 5};
+
+iter(numbers, 5, printInt);
+```
+
+Y:
+
+```cpp
+std::string words[] = {"Hola", "Mundo", "42"};
+
+iter(words, 3, printString);
+```
+
+---
+
+## Compilación
+
+```bash
+make
+```
+
+Ejecutar:
+
+```bash
+./iter
+```
+
+Limpiar:
+
+```bash
+make clean
+```
+
+Eliminar también el ejecutable:
+
+```bash
+make fclean
+```
+
+Recompilar:
+
+```bash
+make re
+```
+
+---
+
+## Conceptos aprendidos
+
+* Function templates.
+* Arrays con tipos genéricos.
+* Pasar funciones como parámetros.
+* Punteros a funciones.
+* Referencias.
+* `size_t`.
+* Recorrer arrays con templates.

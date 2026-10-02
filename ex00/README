@@ -223,6 +223,7 @@ make re
 
 ## Resultado esperado
 
+
 ```text
 a = 3, b = 2
 min(a, b) = 2

@@ -1,0 +1,524 @@
+# CPP07 — Templates
+
+## OBJETIVO DEL MÓDULO
+
+Aprender a utilizar **templates en C++**.
+
+Los templates permiten escribir código que funciona con diferentes tipos sin tener que repetir la misma función o clase.
+
+En este módulo trabajamos:
+
+* Function templates.
+* Arrays y templates.
+* Class templates.
+* Copias independientes.
+* Excepciones.
+
+---
+
+# EX00 — Whatever
+
+## OBJETIVO
+
+Crear tres funciones template:
+
+```cpp
+swap()
+min()
+max()
+```
+
+Las funciones deben funcionar con diferentes tipos.
+
+---
+
+## swap()
+
+```cpp
+template <typename T>
+void swap(T &a, T &b);
+```
+
+Intercambia los valores de `a` y `b`.
+
+Ejemplo:
+
+```text
+a = 2
+b = 3
+
+swap(a, b)
+
+a = 3
+b = 2
+```
+
+Utilizamos una variable temporal para guardar uno de los valores.
+
+---
+
+## min()
+
+```cpp
+template <typename T>
+T min(T &a, T &b);
+```
+
+Devuelve el valor más pequeño.
+
+Si los dos valores son iguales, devuelve el segundo.
+
+---
+
+## max()
+
+```cpp
+template <typename T>
+T max(T &a, T &b);
+```
+
+Devuelve el valor más grande.
+
+Si los dos valores son iguales, devuelve el segundo.
+
+---
+
+## ¿QUÉ SIGNIFICA `T`?
+
+```cpp
+template <typename T>
+```
+
+`T` representa el tipo de dato.
+
+Por ejemplo:
+
+```cpp
+swap<int>(a, b);
+swap<std::string>(a, b);
+```
+
+No tenemos que escribir una función diferente para cada tipo.
+
+---
+
+# EX01 — Iter
+
+## OBJETIVO
+
+Crear una función template llamada `iter` que recorra un array y ejecute una función sobre cada elemento.
+
+```cpp
+template <typename T>
+void iter(T *array, size_t length, void (*function)(T &));
+```
+
+Recibe:
+
+```text
+1. Array
+2. Tamaño del array
+3. Función que ejecutar
+```
+
+---
+
+## FUNCIONAMIENTO
+
+Tenemos:
+
+```cpp
+int numbers[] = {1, 2, 3, 4, 5};
+```
+
+Y llamamos:
+
+```cpp
+iter(numbers, 5, printInt);
+```
+
+`iter` recorre:
+
+```text
+1
+2
+3
+4
+5
+```
+
+Y ejecuta `printInt` sobre cada elemento.
+
+---
+
+## ¿POR QUÉ ES UN TEMPLATE?
+
+Porque puede trabajar con diferentes tipos.
+
+Por ejemplo:
+
+```cpp
+int
+std::string
+double
+```
+
+Siempre que la función pasada sea compatible con el tipo.
+
+---
+
+# EX02 — Array
+
+## OBJETIVO
+
+Crear una clase template:
+
+```cpp
+Array<T>
+```
+
+que gestione un array dinámico.
+
+Debe permitir:
+
+* Crear un array vacío.
+* Crear un array de `n` elementos.
+* Copiar un array.
+* Asignar un array.
+* Acceder mediante `[]`.
+* Controlar índices fuera de rango.
+* Obtener el tamaño.
+
+---
+
+## ARRAY VACÍO
+
+```cpp
+Array<int> empty;
+```
+
+Crea un array sin elementos.
+
+```text
+size = 0
+```
+
+---
+
+## ARRAY CON TAMAÑO
+
+```cpp
+Array<int> numbers(5);
+```
+
+Crea:
+
+```text
+5 elementos
+```
+
+Los índices son:
+
+```text
+0  1  2  3  4
+```
+
+---
+
+## new[]
+
+El ejercicio obliga a utilizar:
+
+```cpp
+new T[n]
+```
+
+para reservar memoria dinámicamente.
+
+---
+
+## delete[]
+
+Cuando terminamos con el array debemos liberar la memoria:
+
+```cpp
+delete [] _array;
+```
+
+Esto se hace en el destructor.
+
+---
+
+# COPIA PROFUNDA
+
+Cuando copiamos un `Array`:
+
+```cpp
+Array<int> copy(numbers);
+```
+
+La copia debe tener su propia memoria.
+
+Si modificamos:
+
+```cpp
+copy[0] = 42;
+```
+
+el original:
+
+```cpp
+numbers[0]
+```
+
+debe seguir teniendo su valor.
+
+Esto se llama **deep copy**.
+
+---
+
+# OPERATOR=
+
+También podemos copiar un array que ya existe:
+
+```cpp
+Array<int> assigned(2);
+
+assigned = numbers;
+```
+
+Después de la asignación, `assigned` tiene los datos de `numbers`.
+
+Los dos arrays siguen teniendo memoria independiente.
+
+---
+
+# OPERATOR[]
+
+Permite acceder a los elementos:
+
+```cpp
+numbers[0]
+numbers[1]
+numbers[2]
+```
+
+Antes de acceder comprobamos el índice:
+
+```cpp
+if (index >= _size)
+    throw OutOfBoundsException();
+```
+
+Si tenemos 5 elementos:
+
+```text
+0  1  2  3  4
+```
+
+`numbers[5]` no existe.
+
+---
+
+# EXCEPCIONES
+
+Creamos:
+
+```cpp
+OutOfBoundsException
+```
+
+Si intentamos acceder fuera del array:
+
+```cpp
+numbers[5]
+```
+
+se lanza:
+
+```cpp
+throw OutOfBoundsException();
+```
+
+El `catch` recoge la excepción:
+
+```cpp
+catch (std::exception &e)
+```
+
+Y obtenemos:
+
+```text
+Exception: Index out of bounds
+```
+
+---
+
+# SIZE()
+
+```cpp
+numbers.size()
+```
+
+Devuelve el número de elementos.
+
+Por ejemplo:
+
+```cpp
+Array<int> numbers(5);
+```
+
+Entonces:
+
+```cpp
+numbers.size()
+```
+
+devuelve:
+
+```text
+5
+```
+
+---
+
+# ESTRUCTURA DEL MÓDULO
+
+```text
+CPP07/
+│
+├── ex00/
+│   ├── Makefile
+│   ├── main.cpp
+│   └── whatever.hpp
+│
+├── ex01/
+│   ├── Makefile
+│   ├── main.cpp
+│   └── iter.hpp
+│
+└── ex02/
+    ├── Makefile
+    ├── main.cpp
+    ├── Array.hpp
+    └── Array.tpp
+```
+
+---
+
+# COMPILACIÓN
+
+Todos los ejercicios utilizan:
+
+```bash
+c++ -Wall -Wextra -Werror -std=c++98
+```
+
+Para cada ejercicio:
+
+```bash
+make
+```
+
+Ejecutar:
+
+```bash
+./whatever
+```
+
+```bash
+./iter
+```
+
+```bash
+./array
+```
+
+Limpiar:
+
+```bash
+make clean
+```
+
+Eliminar todo:
+
+```bash
+make fclean
+```
+
+Recompilar:
+
+```bash
+make re
+```
+
+---
+
+# CONCEPTOS APRENDIDOS
+
+### Template de función
+
+Permite crear funciones que funcionan con diferentes tipos.
+
+```cpp
+template <typename T>
+```
+
+### Template de clase
+
+Permite crear clases que funcionan con diferentes tipos.
+
+```cpp
+template <typename T>
+class Array
+```
+
+### Deep copy
+
+La copia tiene su propia memoria.
+
+### `new[]`
+
+Reserva memoria para un array dinámico.
+
+### `delete[]`
+
+Libera esa memoria.
+
+### `operator[]`
+
+Permite acceder a los elementos de un objeto como si fuera un array.
+
+### Excepciones
+
+Permiten controlar errores como acceder fuera de los límites.
+
+### `size()`
+
+Devuelve el número de elementos.
+
+---
+
+# RESUMEN DEL CPP07
+
+```text
+EX00 → Templates de funciones
+        ↓
+     swap / min / max
+
+EX01 → Templates + arrays
+        ↓
+       iter
+
+EX02 → Template de clase
+        ↓
+      Array<T>
+        ↓
+  memoria dinámica
+  deep copy
+  operator[]
+  excepciones
+  size()
+```
+
+**CPP07 sirve para aprender a reutilizar código mediante templates, primero con funciones y después con clases.**

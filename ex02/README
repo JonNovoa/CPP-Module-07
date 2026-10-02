@@ -1,0 +1,365 @@
+# CPP07 — ex02
+
+## OBJETIVO
+
+Crear una clase template `Array<T>` que gestione un array dinámico.
+
+Debe permitir:
+
+* Crear un array vacío.
+* Crear un array con `n` elementos.
+* Copiar un array sin compartir memoria.
+* Asignar un array a otro sin compartir memoria.
+* Acceder a los elementos con `[]`.
+* Detectar accesos fuera de rango.
+* Consultar el tamaño con `size()`.
+
+---
+
+## ARCHIVOS
+
+```text
+ex02/
+├── Makefile
+├── main.cpp
+├── Array.hpp
+└── Array.tpp
+```
+
+---
+
+## Array.hpp
+
+Aquí definimos la clase `Array`.
+
+```cpp
+template <typename T>
+class Array
+```
+
+`T` representa el tipo de dato que tendrá el array.
+
+Por ejemplo:
+
+```cpp
+Array<int>
+Array<std::string>
+```
+
+### Variables privadas
+
+```cpp
+T *_array;
+unsigned int _size;
+```
+
+* `_array` → guarda los elementos.
+* `_size` → guarda cuántos elementos tiene el array.
+
+---
+
+## CONSTRUCTOR VACÍO
+
+```cpp
+Array();
+```
+
+Crea un array sin elementos.
+
+```cpp
+_array = NULL;
+_size = 0;
+```
+
+---
+
+## CONSTRUCTOR CON TAMAÑO
+
+```cpp
+Array(unsigned int n);
+```
+
+Crea un array con `n` elementos.
+
+```cpp
+_array = new T[n]();
+_size = n;
+```
+
+Los elementos se inicializan con su valor por defecto.
+
+---
+
+## CONSTRUCTOR DE COPIA
+
+```cpp
+Array(const Array &other);
+```
+
+Crea una copia independiente.
+
+No podemos hacer simplemente:
+
+```cpp
+_array = other._array;
+```
+
+porque ambos arrays compartirían la misma memoria.
+
+Por eso creamos otro array y copiamos los elementos uno a uno.
+
+Esto se llama **copia profunda (deep copy)**.
+
+---
+
+## OPERATOR=
+
+```cpp
+Array &operator=(const Array &other);
+```
+
+Copia un array dentro de otro que ya existe.
+
+Primero eliminamos la memoria anterior:
+
+```cpp
+delete [] _array;
+```
+
+Después reservamos memoria nueva y copiamos los elementos.
+
+También comprobamos:
+
+```cpp
+if (this != &other)
+```
+
+para evitar asignar un objeto a sí mismo.
+
+---
+
+## DESTRUCTOR
+
+```cpp
+~Array();
+```
+
+Libera la memoria reservada:
+
+```cpp
+delete [] _array;
+```
+
+Como usamos:
+
+```cpp
+new T[n]
+```
+
+debemos utilizar:
+
+```cpp
+delete [] _array;
+```
+
+---
+
+## OPERATOR[]
+
+```cpp
+T &operator[](unsigned int index);
+```
+
+Permite acceder a una posición del array:
+
+```cpp
+numbers[0]
+numbers[1]
+numbers[2]
+```
+
+Antes de acceder comprobamos que el índice sea válido:
+
+```cpp
+if (index >= _size)
+    throw OutOfBoundsException();
+```
+
+Si el array tiene 5 elementos:
+
+```text
+0  1  2  3  4
+```
+
+El índice `5` ya está fuera del array.
+
+---
+
+## EXCEPCIÓN
+
+Creamos nuestra propia excepción:
+
+```cpp
+class OutOfBoundsException : public std::exception
+```
+
+Cuando intentamos acceder a una posición que no existe:
+
+```cpp
+throw OutOfBoundsException();
+```
+
+El `main` la recoge con:
+
+```cpp
+catch (std::exception &e)
+```
+
+Y muestra:
+
+```text
+Exception: Index out of bounds
+```
+
+---
+
+## SIZE()
+
+```cpp
+unsigned int size() const;
+```
+
+Devuelve el número de elementos del array.
+
+Por ejemplo:
+
+```cpp
+Array<int> numbers(5);
+```
+
+Entonces:
+
+```cpp
+numbers.size()
+```
+
+devuelve:
+
+```text
+5
+```
+
+---
+
+## PRUEBAS DEL MAIN
+
+El `main` comprueba:
+
+### 1. Array vacío
+
+```cpp
+Array<int> empty;
+```
+
+Resultado:
+
+```text
+Empty size: 0
+```
+
+### 2. Array de 5 elementos
+
+```cpp
+Array<int> numbers(5);
+```
+
+Se rellenan y se muestran los valores.
+
+### 3. Constructor de copia
+
+```cpp
+Array<int> copy(numbers);
+```
+
+Después modificamos `copy`.
+
+El original no cambia.
+
+Esto demuestra que son independientes.
+
+### 4. Operator=
+
+```cpp
+Array<int> assigned(2);
+assigned = numbers;
+```
+
+El array pasa de tener 2 elementos a tener los mismos elementos que `numbers`.
+
+Después modificamos `assigned`.
+
+El original tampoco cambia.
+
+### 5. Out of bounds
+
+Intentamos:
+
+```cpp
+numbers[5]
+```
+
+Pero los índices válidos son:
+
+```text
+0 1 2 3 4
+```
+
+Por lo que se lanza:
+
+```text
+Exception: Index out of bounds
+```
+
+---
+
+## COMPILACIÓN
+
+```bash
+make
+```
+
+Ejecutar:
+
+```bash
+./array
+```
+
+Limpiar:
+
+```bash
+make clean
+```
+
+Eliminar también el ejecutable:
+
+```bash
+make fclean
+```
+
+Recompilar desde cero:
+
+```bash
+make re
+```
+
+---
+
+## CONCEPTOS IMPORTANTES
+
+* **Template** → permite usar `Array` con cualquier tipo.
+* **new[]** → reserva memoria para el array.
+* **delete[]** → libera esa memoria.
+* **Deep copy** → cada objeto tiene su propia memoria.
+* **operator[]** → permite acceder a los elementos.
+* **Excepción** → controla índices fuera de rango.
+* **size()** → devuelve el número de elementos.
